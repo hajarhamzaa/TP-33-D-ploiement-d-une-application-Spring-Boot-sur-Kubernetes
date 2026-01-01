@@ -1,6 +1,6 @@
 # TP 33 : Déploiement d'une application Spring Boot sur Kubernetes
 
-## Objectifs pédagogiques
+## Objectifs 
 À la fin de ce lab, l'étudiant est capable de :
 - Conteneuriser une application Spring Boot avec Docker
 - Créer les manifests Kubernetes de base : Deployment et Service
@@ -149,48 +149,4 @@ curl http://$MINIKUBE_IP:30080/api/hello
 - ✅ Namespace dédié pour l'isolation
 - ✅ Documentation complète
 
-## 📚 Pour aller plus loin
 
-Voir le fichier `EXTENSIONS.md` pour :
-- Spring Boot Actuator
-- Ingress Controller
-- CI/CD avec GitHub Actions
-- Communication inter-services
-- Monitoring avec Prometheus/Grafana
-- Autoscaling (HPA)
-- Sécurité avancée
-- Et bien plus !
-
-## 🔧 Commandes utiles
-
-```bash
-# Observer l'état
-kubectl get all -n lab-k8s
-kubectl describe pod <pod-name> -n lab-k8s
-
-# Debug
-kubectl exec -it <pod-name> -n lab-k8s -- sh
-kubectl port-forward <pod-name> 8080:8080 -n lab-k8s
-
-# Logs en temps réel
-kubectl logs -f <pod-name> -n lab-k8s
-
-# ConfigMap
-kubectl get configmap demo-k8s-config -n lab-k8s -o yaml
-kubectl edit configmap demo-k8s-config -n lab-k8s
-```
-
-## 🎉 Félicitations !
-
-Vous avez maintenant :
-- ✅ Déployé une application Spring Boot sur Kubernetes
-- ✅ Utilisé les ConfigMap pour la configuration
-- ✅ Observé et diagnostiqué votre déploiement
-- ✅ Automatisé toutes les opérations
-- ✅ Une base solide pour des déploiements plus complexes
-
-**Prochaines étapes recommandées** :
-1. Explorer les extensions dans `EXTENSIONS.md`
-2. Ajouter Spring Boot Actuator pour le monitoring
-3. Mettre en place un pipeline CI/CD
-4. Expérimenter avec plusieurs microservices
