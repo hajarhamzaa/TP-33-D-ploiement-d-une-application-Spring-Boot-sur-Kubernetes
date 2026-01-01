@@ -1,0 +1,63 @@
+@echo off
+REM Script de déploiement automatique pour le TP 33 (Windows)
+
+echo 🚀 Début du déploiement de l'application Spring Boot sur Kubernetes
+
+REM Étape 1: Construction de l'application
+echo 📦 Construction de l'application...
+call mvn clean package -DskipTests
+if %ERRORLEVEL% neq 0 (
+    echo ❌ Erreur lors de la construction de l'application
+    exit /b 1
+)
+
+REM Étape 2: Démarrage de Minikube
+echo 🔥 Démarrage de Minikube...
+call minikube start
+if %ERRORLEVEL% neq 0 (
+    echo ❌ Erreur lors du démarrage de Minikube
+    exit /b 1
+)
+
+REM Étape 3: Configuration de l'environnement Docker
+echo 🐳 Configuration de l'environnement Docker...
+FOR /f "tokens=*" %%i IN ('minikube docker-env') DO %%i
+
+REM Étape 4: Construction de l'image Docker
+echo 🏗️ Construction de l'image Docker...
+docker build -t demo-k8s:1.0.0 .
+if %ERRORLEVEL% neq 0 (
+    echo ❌ Erreur lors de la construction de l'image Docker
+    exit /b 1
+)
+
+REM Étape 5: Création du namespace
+echo 📂 Création du namespace...
+kubectl create namespace lab-k8s --dry-run=client -o yaml | kubectl apply -f -
+
+REM Étape 6: Déploiement de l'application
+echo 🚢 Déploiement de l'application...
+kubectl apply -f k8s-deployment.yaml
+kubectl apply -f k8s-service.yaml
+
+REM Étape 7: Attente du déploiement
+echo ⏳ Attente du déploiement...
+kubectl wait --for=condition=available --timeout=300s deployment/demo-k8s-deployment -n lab-k8s
+
+REM Étape 8: Vérification
+echo ✅ Vérification du déploiement...
+kubectl get pods -n lab-k8s
+kubectl get svc -n lab-k8s
+
+REM Étape 9: Test de l'API
+echo 🌐 Test de l'API...
+FOR /f "tokens=*" %%i IN ('minikube ip') DO set MINIKUBE_IP=%%i
+echo IP de Minikube: %MINIKUBE_IP%
+echo Test de l'endpoint: http://%MINIKUBE_IP%:30080/api/hello
+
+REM Attendre un peu que les pods soient prêts
+timeout /t 10 /nobreak >nul
+curl http://%MINIKUBE_IP%:30080/api/hello
+
+echo 🎉 Déploiement terminé avec succès!
+echo 📝 Pour accéder à l'API: curl http://%MINIKUBE_IP%:30080/api/hello
